@@ -1,0 +1,53 @@
+# Maven / Java
+target/
+**/target/
+*.class
+bin/
+obj/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+.factorypath
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Node (monitoring dashboard)
+monitoring-ui/node_modules/
+monitoring-ui/dist/
+
+# Logs & temp
+*.log
+*.tmp
+*.temp
+hs_err_pid*.log
+replay_pid*.log
+
+# Spring / env (do not commit secrets)
+.env
+.env.local
+*.pem
+
+# Test / coverage
+.nyc_output/
+coverage/
