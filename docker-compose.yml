@@ -173,6 +173,28 @@ services:
     networks:
       - insurance_net
 
+  monitoring-ui:
+    build:
+      context: ./monitoring-ui
+      dockerfile: Dockerfile
+    container_name: insurance-monitoring-ui
+    restart: unless-stopped
+    ports:
+      - "${MONITORING_UI_PORT:-5173}:5173"
+    environment:
+      # Vite dev server (in container) proxies /api/* and /ws to these Compose service DNS names.
+      VITE_POLICY_PROXY_TARGET: http://policy-service:8081
+      VITE_PAYMENT_PROXY_TARGET: http://payment-service:8082
+      # Reserved for optional absolute API base in the SPA; empty = same-origin via proxy.
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-}
+    depends_on:
+      policy-service:
+        condition: service_started
+      payment-service:
+        condition: service_started
+    networks:
+      - insurance_net
+
 networks:
   insurance_net:
     name: insurance_net

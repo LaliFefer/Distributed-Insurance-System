@@ -23,9 +23,7 @@ cp .env.example .env   # optional: tune passwords/ports
 docker compose up --build -d
 ```
 
-- **Policy API:** [http://localhost:8081/swagger-ui.html](http://localhost:8081/swagger-ui.html)  
-- **Payment API:** [http://localhost:8082/swagger-ui.html](http://localhost:8082/swagger-ui.html)  
-- **Zipkin:** [http://localhost:9411](http://localhost:9411)  
+See **[Service access points](#service-access-points)** for UI, Swagger, and Zipkin URLs.
 
 Rebuild without cache before a release demo:
 
@@ -36,8 +34,25 @@ docker compose up -d
 
 ---
 
+## Service access points
+
+When you run **`docker compose up -d`**, each component runs in its own container on the **insurance_net** bridge network. The **monitoring-ui** container runs the **Vite dev server** (bound to **`0.0.0.0:5173`** inside the container) and publishes port **5173** to the host, so you open the dashboard at **localhost** like any other forwarded port.
+
+| Surface | URL | Notes |
+|--------|-----|--------|
+| **Monitoring UI** | [http://localhost:5173](http://localhost:5173) | React dashboard; browser calls stay on this origin and are **proxied** by Vite to policy/payment services. |
+| **Policy API (Swagger)** | [http://localhost:8081/swagger-ui.html](http://localhost:8081/swagger-ui.html) | `policy-service` |
+| **Payment API (Swagger)** | [http://localhost:8082/swagger-ui.html](http://localhost:8082/swagger-ui.html) | `payment-service` |
+| **Zipkin** | [http://localhost:9411](http://localhost:9411) | Distributed tracing UI |
+
+Override the UI host port with **`MONITORING_UI_PORT`** in **`.env`** if **5173** is already in use.
+
+---
+
 ## Table of contents
 
+- [Quick start (Docker)](#quick-start-docker)
+- [Service access points](#service-access-points)
 - [Architecture overview](#architecture-overview)
 - [Design patterns & engineering principles](#design-patterns--engineering-principles)
 - [Transactional outbox pattern](#transactional-outbox-pattern)
@@ -256,7 +271,7 @@ insurance-system/
 ├── policy-service/            # REST, outbox, scheduler, Kafka producer, Dockerfile
 ├── payment-service/           # Kafka consumer, Redis idempotency, Dockerfile
 ├── scripts/                   # Optional PowerShell helpers (build / run)
-├── monitoring-ui/             # React 18 + Vite dashboard (see monitoring-ui/README.md)
+├── monitoring-ui/             # React 18 + Vite dashboard + Dockerfile (see monitoring-ui/README.md)
 ├── docker-compose.yml         # Postgres ×2, Kafka, Redis, Zipkin, both apps
 ├── mvnw, mvnw.cmd             # Maven Wrapper
 └── pom.xml                    # Parent aggregator
@@ -326,7 +341,7 @@ Default DB user/password match **`application.yml`** (`insurance` / `changeme`).
 cd monitoring-ui && npm install && npm run dev
 ```
 
-Requires **policy-service** on **8081** and **payment-service** on **8082** (or adjust Vite `server.proxy` in `monitoring-ui/vite.config.ts`).
+Requires **policy-service** on **8081** and **payment-service** on **8082** when running **`npm run dev` on the host**, or use **`docker compose up`** so **`monitoring-ui`** proxies to **`policy-service`** / **`payment-service`** via **`VITE_*_PROXY_TARGET`** (see **`docker-compose.yml`**).
 
 ### Tests
 
