@@ -27,6 +27,18 @@ Vite proxies:
 | `/api/payments`, `/api/payment` | `http://127.0.0.1:8082` |
 | `/ws` | HTTP target `http://127.0.0.1:8081` with `ws: true` (upgrade to `/ws/monitor`) |
 
+Override proxy backends with **`VITE_POLICY_PROXY_TARGET`** and **`VITE_PAYMENT_PROXY_TARGET`** (used by **`docker-compose`** for the **`monitoring-ui`** service, e.g. `http://policy-service:8081`).
+
+## Docker (full stack)
+
+From the **repository root**:
+
+```bash
+docker compose up --build -d
+```
+
+Open [http://localhost:5173](http://localhost:5173). The UI container listens on **`0.0.0.0:5173`**; Compose maps **`5173:5173`** to the host.
+
 ## Build
 
 ```bash
